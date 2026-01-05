@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>めるみくじ設定</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #e0f7fa; color: #006064; }
+        .card { max-width: 500px; background: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 20px; margin: auto; box-shadow: 0 8px 30px rgba(0,188,212,0.1); border: 2px solid #b2ebf2; }
+        h2 { border-bottom: 2px solid #4dd0e1; padding-bottom: 10px; text-align: center; }
+        .row { display: flex; align-items: center; margin-bottom: 10px; }
+        label { width: 60px; font-weight: bold; }
+        input[type="text"] { flex: 2; padding: 8px; margin-right: 10px; border: 1px solid #4dd0e1; border-radius: 10px; }
+        input[type="number"] { width: 50px; padding: 8px; border: 1px solid #4dd0e1; border-radius: 10px; }
+        button { background: #00bcd4; color: white; border: none; padding: 12px; width: 100%; border-radius: 25px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 15px; }
+        button:hover { background: #00acc1; }
+        .links { text-align: center; margin-top: 15px; }
+        a { color: #0097a7; text-decoration: none; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>めるみくじ設定</h2>
+        <div id="inputs"></div>
+        <button onclick="saveConfig()">この内容で設定を保存</button>
+        <div class="links"><a href="omikuji.html">→ めるみくじを引く</a></div>
+    </div>
+
+    <script>
+        const types = ["大吉", "吉", "凶", "大凶"];
+        const defaultFiles = ["daikichi.png", "kichi.png", "kyo.png", "daikyo.png"];
+
+        window.onload = function() {
+            const container = document.getElementById('inputs');
+            const saved = JSON.parse(localStorage.getItem('merumikujiConfig')) || {};
+            types.forEach((type, i) => {
+                const data = saved[type] || { file: defaultFiles[i], weight: 25 };
+                container.innerHTML += `
+                    <div class="row">
+                        <label>${type}</label>
+                        <input type="text" id="file-${i}" value="${data.file}">
+                        <input type="number" id="weight-${i}" value="${data.weight}"> %
+                    </div>`;
+            });
+        };
+
+        function saveConfig() {
+            const config = {};
+            let total = 0;
+            types.forEach((type, i) => {
+                const weight = parseInt(document.getElementById(`weight-${i}`).value);
+                config[type] = { file: document.getElementById(`file-${i}`).value, weight: weight };
+                total += weight;
+            });
+            if (total !== 100) { alert(`合計が${total}%です。100%にしてください。`); return; }
+            localStorage.setItem('merumikujiConfig', JSON.stringify(config));
+            alert('設定を保存しました。');
+        }
+    </script>
+</body>
+</html>

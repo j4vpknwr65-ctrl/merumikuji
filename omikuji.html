@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>めるみくじ</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body { 
+            text-align: center; 
+            font-family: "Hiragino Maru Gothic ProN", sans-serif; 
+            background: linear-gradient(180deg, #b2ebf2 0%, #4dd0e1 100%); 
+            margin: 0; 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            transition: 0.8s;
+            overflow: hidden; /* 泡の演出のため画面外を隠す */
+            position: relative;
+        }
+
+        /* 泡の背景演出 */
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            bottom: -50px;
+            animation: rise 10s infinite ease-in;
+            z-index: 0;
+        }
+        @keyframes rise {
+            0% { transform: translateY(0) scale(1); opacity: 0.5; }
+            100% { transform: translateY(-110vh) scale(1.5); opacity: 0; }
+        }
+
+        h1 { 
+            font-size: 1.8em; 
+            color: #ffffff; 
+            text-shadow: 0 0 12px rgba(0,188,212,0.8);
+            margin: 10px 0; 
+            padding: 5px 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50px;
+            z-index: 10;
+        }
+
+        button { 
+            font-size: 1.1rem; 
+            padding: 12px 35px; 
+            background: rgba(255,255,255,0.8); 
+            color: #00838f; 
+            border: 2px solid #fff; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transition: 0.3s;
+            z-index: 10;
+        }
+        button:hover { background: #fff; transform: scale(1.1); }
+
+        #result-area { 
+            display: flex;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        /* 【修正点】サイズを1/3に縮小 (261x392) */
+        #result-img { 
+            width: 261px; 
+            height: 392px; 
+            object-fit: cover; 
+            border: 6px solid rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 0 25px rgba(255,255,255,0.6);
+            display: none;
+            animation: jellyfish-float 4s ease-in-out infinite;
+        }
+
+        /* クラゲのような、よりふわふわした浮遊感 */
+        @keyframes jellyfish-float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-15px) rotate(2deg); }
+            66% { transform: translateY(-5px) rotate(-2deg); }
+        }
+
+        /* 大凶の演出：深海の底へ */
+        body.dark-sea { background: #011627; }
+        .dark-img { filter: invert(0.2) blue-shift; animation: sink 0.2s infinite !important; }
+
+        @keyframes sink {
+            0% { transform: translate(1px, 1px); }
+            100% { transform: translate(-1px, -1px); }
+        }
+
+        .config-link { position: absolute; bottom: 15px; z-index: 10; }
+        a { color: #ffffff; text-decoration: none; opacity: 0.6; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+
+    <div id="bubble-container"></div>
+
+    <h1>めるみくじ</h1>
+    
+    <button onclick="draw()">おみくじをふわふわ振る</button>
+
+    <div id="result-area">
+        <img id="result-img" src="">
+    </div>
+
+    <div class="config-link"><a href="config.html">設定画面へ</a></div>
+
+    <script>
+        // 背景の泡をランダムに生成
+        const bubbleContainer = document.getElementById('bubble-container');
+        for (let i = 0; i < 15; i++) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            const size = Math.random() * 40 + 10 + 'px';
+            bubble.style.width = size;
+            bubble.style.height = size;
+            bubble.style.left = Math.random() * 100 + '%';
+            bubble.style.animationDuration = Math.random() * 5 + 5 + 's';
+            bubble.style.animationDelay = Math.random() * 5 + 's';
+            bubbleContainer.appendChild(bubble);
+        }
+
+        function draw() {
+            const img = document.getElementById('result-img');
+            const body = document.body;
+            const saved = localStorage.getItem('merumikujiConfig');
+            
+            if (!saved) { alert("設定を保存してください"); return; }
+            const config = JSON.parse(saved);
+            
+            const rand = Math.random() * 100;
+            let current = 0;
+            let resultType = "";
+
+            for (let type in config) {
+                current += config[type].weight;
+                if (rand <= current) { resultType = type; break; }
+            }
+
+            img.style.display = 'block';
+            img.classList.remove('dark-img');
+            body.classList.remove('dark-sea');
+            img.src = config[resultType].file;
+
+            if (resultType === "大吉") {
+                // 水色と白の幻想的な紙吹雪
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    colors: ['#e0f7fa', '#ffffff', '#26c6da']
+                });
+            } else if (resultType === "大凶") {
+                body.classList.add('dark-sea');
+                img.classList.add('dark-img');
+            }
+        }
+    </script>
+</body>
+</html>
