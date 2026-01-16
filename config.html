@@ -2,27 +2,31 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>めるみくじ設定</title>
     <style>
         body { font-family: sans-serif; padding: 20px; background: #e0f7fa; color: #006064; }
         .card { max-width: 500px; background: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 20px; margin: auto; box-shadow: 0 8px 30px rgba(0,188,212,0.1); border: 2px solid #b2ebf2; }
         h2 { border-bottom: 2px solid #4dd0e1; padding-bottom: 10px; text-align: center; }
-        .row { display: flex; align-items: center; margin-bottom: 10px; }
+        .row { display: flex; align-items: center; margin-bottom: 15px; }
         label { width: 60px; font-weight: bold; }
-        input[type="text"] { flex: 2; padding: 8px; margin-right: 10px; border: 1px solid #4dd0e1; border-radius: 10px; }
-        input[type="number"] { width: 50px; padding: 8px; border: 1px solid #4dd0e1; border-radius: 10px; }
-        button { background: #00bcd4; color: white; border: none; padding: 12px; width: 100%; border-radius: 25px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 15px; }
+        input[type="text"] { flex: 2; padding: 10px; margin-right: 10px; border: 1px solid #4dd0e1; border-radius: 10px; }
+        input[type="number"] { width: 60px; padding: 10px; border: 1px solid #4dd0e1; border-radius: 10px; }
+        button { background: #00bcd4; color: white; border: none; padding: 15px; width: 100%; border-radius: 25px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 15px; }
         button:hover { background: #00acc1; }
-        .links { text-align: center; margin-top: 15px; }
-        a { color: #0097a7; text-decoration: none; font-size: 0.9em; }
+        .links { text-align: center; margin-top: 20px; }
+        .back-link { display: inline-block; padding: 10px 20px; background: #006064; color: white; text-decoration: none; border-radius: 20px; }
     </style>
 </head>
 <body>
     <div class="card">
         <h2>めるみくじ設定</h2>
+        <p style="font-size: 0.8em; text-align: center;">ファイル名と確率(合計100)を入力して保存してください</p>
         <div id="inputs"></div>
         <button onclick="saveConfig()">この内容で設定を保存</button>
-        <div class="links"><a href="omikuji.html">→ めるみくじを引く</a></div>
+        <div class="links">
+            <a href="index.html" class="back-link">← おみくじ画面に戻る</a>
+        </div>
     </div>
 
     <script>
@@ -53,7 +57,7 @@
             });
             if (total !== 100) { alert(`合計が${total}%です。100%にしてください。`); return; }
             localStorage.setItem('merumikujiConfig', JSON.stringify(config));
-            alert('設定を保存しました。');
+            alert('設定を保存しました。おみくじ画面に戻ってください。');
         }
     </script>
 </body>

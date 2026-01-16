@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>めるみくじ</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
@@ -16,11 +17,10 @@
             align-items: center;
             justify-content: flex-start;
             transition: 0.8s;
-            overflow: hidden; /* 泡の演出のため画面外を隠す */
+            overflow: hidden;
             position: relative;
         }
 
-        /* 泡の背景演出 */
         .bubble {
             position: absolute;
             background: rgba(255, 255, 255, 0.4);
@@ -38,11 +38,25 @@
             font-size: 1.8em; 
             color: #ffffff; 
             text-shadow: 0 0 12px rgba(0,188,212,0.8);
-            margin: 10px 0; 
+            margin: 10px 0 5px 0; 
             padding: 5px 40px;
             background: rgba(255,255,255,0.2);
             border-radius: 50px;
             z-index: 10;
+        }
+
+        /* 設定へのリンク（上部） */
+        .top-nav {
+            z-index: 20;
+            margin-bottom: 10px;
+        }
+        .top-nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.8em;
+            background: rgba(0,0,0,0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
         }
 
         button { 
@@ -66,7 +80,6 @@
             z-index: 10;
         }
 
-        /* 【修正点】サイズを1/3に縮小 (261x392) */
         #result-img { 
             width: 261px; 
             height: 392px; 
@@ -78,31 +91,29 @@
             animation: jellyfish-float 4s ease-in-out infinite;
         }
 
-        /* クラゲのような、よりふわふわした浮遊感 */
         @keyframes jellyfish-float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             33% { transform: translateY(-15px) rotate(2deg); }
             66% { transform: translateY(-5px) rotate(-2deg); }
         }
 
-        /* 大凶の演出：深海の底へ */
         body.dark-sea { background: #011627; }
-        .dark-img { filter: invert(0.2) blue-shift; animation: sink 0.2s infinite !important; }
+        .dark-img { filter: invert(0.2); animation: sink 0.2s infinite !important; }
 
         @keyframes sink {
             0% { transform: translate(1px, 1px); }
             100% { transform: translate(-1px, -1px); }
         }
 
-        .config-link { position: absolute; bottom: 15px; z-index: 10; }
-        a { color: #ffffff; text-decoration: none; opacity: 0.6; font-size: 0.8em; }
+        .footer-link { position: absolute; bottom: 15px; z-index: 10; }
+        .footer-link a { color: #ffffff; text-decoration: none; opacity: 0.6; font-size: 0.8em; }
     </style>
 </head>
 <body>
-
     <div id="bubble-container"></div>
 
     <h1>めるみくじ</h1>
+    <div class="top-nav"><a href="config.html">⚙ 設定を開く</a></div>
     
     <button onclick="draw()">おみくじをふわふわ振る</button>
 
@@ -110,10 +121,9 @@
         <img id="result-img" src="">
     </div>
 
-    <div class="config-link"><a href="config.html">設定画面へ</a></div>
+    <div class="footer-link"><a href="config.html">うまく動かない場合はこちら（設定）</a></div>
 
     <script>
-        // 背景の泡をランダムに生成
         const bubbleContainer = document.getElementById('bubble-container');
         for (let i = 0; i < 15; i++) {
             const bubble = document.createElement('div');
@@ -139,7 +149,8 @@
             let current = 0;
             let resultType = "";
 
-            for (let type in config) {
+            const types = ["大吉", "吉", "凶", "大凶"];
+            for (let type of types) {
                 current += config[type].weight;
                 if (rand <= current) { resultType = type; break; }
             }
@@ -150,7 +161,6 @@
             img.src = config[resultType].file;
 
             if (resultType === "大吉") {
-                // 水色と白の幻想的な紙吹雪
                 confetti({
                     particleCount: 150,
                     spread: 70,
@@ -163,5 +173,4 @@
         }
     </script>
 </body>
-
 </html>
